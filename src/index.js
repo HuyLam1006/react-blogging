@@ -8,6 +8,8 @@ import { GlobalStyles } from './styles/GlobalStyles'
 import './styles/index.scss'
 import './index.scss'
 import { theme } from './utils/contants'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const container = document.getElementById('root')
 const root = createRoot(container)
@@ -18,6 +20,7 @@ root.render(
       <GlobalStyles></GlobalStyles>
       <BrowserRouter>
         <App />
+        <ToastContainer></ToastContainer>
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>
