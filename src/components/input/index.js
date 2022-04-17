@@ -1,2 +1,3 @@
 import Input from './Input'
-export { Input }
+import InputPasswordToggle from './InputPasswordToggle'
+export { Input, InputPasswordToggle }

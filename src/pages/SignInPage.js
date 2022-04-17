@@ -3,9 +3,9 @@ import { Button } from 'components/button'
 import { Field } from 'components/field'
 import { Input, InputPasswordToggle } from 'components/input'
 import { Label } from 'components/label'
-import { auth, db } from 'firebase-app/firebase-config'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { addDoc, collection } from 'firebase/firestore'
+import { useAuth } from 'contexts/auth-context'
+import { auth } from 'firebase-app/firebase-config'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -14,7 +14,6 @@ import * as yup from 'yup'
 import AuthenticationPage from './AuthenticationPage'
 
 const schema = yup.object({
-  fullname: yup.string().required('Please enter your fullname'),
   email: yup
     .string()
     .email('Please enter valid email address')
@@ -25,42 +24,15 @@ const schema = yup.object({
     .required('Please enter your password'),
 })
 
-const SignUpPage = () => {
-  const navigate = useNavigate()
-
+const SignInPage = () => {
   const {
-    control,
     handleSubmit,
-    formState: { errors, isValid, isSubmitting },
-    watch,
-    reset,
+    control,
+    formState: { isSubmitting, isValid, errors },
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(schema),
   })
-
-  const handleSignUp = async (values) => {
-    if (!isValid) return
-    // console.log('SignUpPage ~ values', values)
-
-    await createUserWithEmailAndPassword(auth, values.email, values.password)
-    await updateProfile(auth.currentUser, {
-      displayName: values.fullname,
-    })
-    const colRef = collection(db, 'users')
-    addDoc(colRef, {
-      fullname: values.fullname,
-      email: values.email,
-      password: values.password,
-    })
-    toast.success('Register successfullly !!!')
-    navigate('/')
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     resolve()
-    //   }, 3000)
-    // })
-  }
 
   useEffect(() => {
     const arrayErrors = Object.values(errors)
@@ -72,26 +44,28 @@ const SignUpPage = () => {
     }
   }, [errors])
 
+  const { userInfo } = useAuth()
+  const nagivate = useNavigate()
+  //   //   console.log('SignInPage ~ userInfo', userInfo)
   useEffect(() => {
-    document.title = 'Sign Up'
-  }, [])
+    document.title = 'Sign In'
+    if (userInfo?.email) nagivate('/')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo])
+
+  const handleSignIn = async (values) => {
+    if (!isValid) return
+    await signInWithEmailAndPassword(auth, values.email, values.password)
+    nagivate('/')
+  }
 
   return (
     <AuthenticationPage>
       <form
         className="form"
-        onSubmit={handleSubmit(handleSignUp)}
+        onSubmit={handleSubmit(handleSignIn)}
         autoComplete="off"
       >
-        <Field>
-          <Label htmlFor="fullname">Fullname</Label>
-          <Input
-            type="text"
-            name="fullname"
-            placeholder="Enter your fullname"
-            control={control}
-          />
-        </Field>
         <Field>
           <Label htmlFor="email">Email address</Label>
           <Input
@@ -99,14 +73,15 @@ const SignUpPage = () => {
             name="email"
             placeholder="Enter your email"
             control={control}
-          />
+          ></Input>
         </Field>
         <Field>
           <Label htmlFor="password">Password</Label>
           <InputPasswordToggle control={control}></InputPasswordToggle>
         </Field>
         <div className="have-account">
-          You already have an account? <NavLink to={'/sign-in'}>Login</NavLink>
+          You have not had an account?{' '}
+          <NavLink to={'/sign-up'}>Register</NavLink>
         </div>
         <Button
           type="submit"
@@ -121,4 +96,4 @@ const SignUpPage = () => {
   )
 }
 
-export default SignUpPage
+export default SignInPage
