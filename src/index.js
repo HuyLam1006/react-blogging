@@ -1,15 +1,14 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { ThemeProvider } from 'styled-components'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { GlobalStyles } from './styles/GlobalStyles'
 import './styles/index.scss'
-import './index.scss'
 import { theme } from './utils/contants'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 const container = document.getElementById('root')
 const root = createRoot(container)
